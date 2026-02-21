@@ -38,8 +38,8 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// API Routes (to be implemented)
-// app.use('/api/auth', require('./routes/auth.routes'));
+// API Routes
+app.use('/api/auth', require('./routes/auth.routes'));
 // app.use('/api/vehicles', require('./routes/vehicle.routes'));
 // app.use('/api/drivers', require('./routes/driver.routes'));
 // app.use('/api/trips', require('./routes/trip.routes'));
