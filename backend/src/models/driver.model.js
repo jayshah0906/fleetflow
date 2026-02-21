@@ -92,6 +92,22 @@ class DriverModel {
     const result = await pool.query(query, [id]);
     return result.rows[0]?.is_valid || false;
   }
+
+  // Get trip counts for a driver
+  async getTripCounts(id) {
+    const query = `
+      SELECT 
+        COUNT(*) as total_trips,
+        COUNT(*) FILTER (WHERE status = 'In Progress') as active_trips
+      FROM trips
+      WHERE driver_id = $1
+    `;
+    const result = await pool.query(query, [id]);
+    return {
+      total_trips: parseInt(result.rows[0].total_trips) || 0,
+      active_trips: parseInt(result.rows[0].active_trips) || 0,
+    };
+  }
 }
 
 module.exports = new DriverModel();

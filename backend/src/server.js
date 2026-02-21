@@ -40,12 +40,12 @@ app.get('/health', (req, res) => {
 
 // API Routes
 app.use('/api/auth', require('./routes/auth.routes'));
-// app.use('/api/vehicles', require('./routes/vehicle.routes'));
-// app.use('/api/drivers', require('./routes/driver.routes'));
-// app.use('/api/trips', require('./routes/trip.routes'));
-// app.use('/api/maintenance', require('./routes/maintenance.routes'));
-// app.use('/api/expenses', require('./routes/expense.routes'));
-// app.use('/api/dashboard', require('./routes/dashboard.routes'));
+app.use('/api/vehicles', require('./routes/vehicle.routes'));
+app.use('/api/drivers', require('./routes/driver.routes'));
+app.use('/api/trips', require('./routes/trip.routes'));
+app.use('/api/maintenance', require('./routes/maintenance.routes'));
+app.use('/api/expenses', require('./routes/expense.routes'));
+app.use('/api/dashboard', require('./routes/dashboard.routes'));
 // app.use('/api/reports', require('./routes/report.routes'));
 
 // 404 handler
