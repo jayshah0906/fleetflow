@@ -3,20 +3,17 @@ import { Link, useNavigate } from "react-router-dom";
 import TruckIcon from "../common/TruckIcon";
 import "../../styles/sidebar.css";
 
-function Sidebar() {
+function SidebarDispatcher() {
   const navigate = useNavigate();
   
-  // Get current user info
   const currentUser = JSON.parse(localStorage.getItem("currentUser") || "{}");
   const userName = currentUser.fullName || "User";
   const userRole = currentUser.role || "user";
   
-  // Format role for display
   const formatRole = (role) => {
     return role.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
   };
   
-  // Get initials from name
   const getInitials = (name) => {
     return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
   };
@@ -38,10 +35,8 @@ function Sidebar() {
       </div>
 
       <nav className="sidebar-nav">
-        <Link to="/dashboard">Dashboard</Link>
-        <Link to="/registry">Vehicle Registry</Link>
-        <Link to="/operations">Operations</Link>
-        <Link to="/admin">Admin Panel</Link>
+        <Link to="/dispatcher">Dashboard</Link>
+        <Link to="/new-trip">New Trip</Link>
       </nav>
 
       <div className="sidebar-user">
@@ -72,4 +67,4 @@ function Sidebar() {
   );
 }
 
-export default Sidebar;
+export default SidebarDispatcher;

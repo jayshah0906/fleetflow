@@ -11,12 +11,8 @@ function AuthNavbar() {
       </div>
 
       <nav>
-        <a href="#">Solutions</a>
-        <a href="#">Pricing</a>
         <a href="#">Support</a>
       </nav>
-
-      <button className="primary-btn">Contact Sales</button>
     </header>
   );
 }

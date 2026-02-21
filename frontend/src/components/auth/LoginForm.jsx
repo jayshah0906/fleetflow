@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "../../styles/forms.css";
 
-function LoginForm({ onLogin }) {
+function LoginForm({ onLogin, loginError }) {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -57,6 +57,20 @@ function LoginForm({ onLogin }) {
     <div className="auth-section">
       <h2>Welcome Back</h2>
       <p>Manage your fleet efficiency with ease.</p>
+
+      {loginError && (
+        <div style={{
+          color: '#dc3545',
+          backgroundColor: '#f8d7da',
+          border: '1px solid #f5c6cb',
+          padding: '10px',
+          borderRadius: '5px',
+          marginBottom: '15px',
+          fontSize: '14px'
+        }}>
+          {loginError}
+        </div>
+      )}
 
       <form className="form" onSubmit={handleSubmit}>
         <div className="form-group">

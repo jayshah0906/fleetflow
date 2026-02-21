@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import TruckIcon from "../common/TruckIcon";
 import "../../styles/sidebar.css";
 
-function Sidebar() {
+function SidebarFleetManager() {
   const navigate = useNavigate();
   
   // Get current user info
@@ -38,10 +38,12 @@ function Sidebar() {
       </div>
 
       <nav className="sidebar-nav">
-        <Link to="/dashboard">Dashboard</Link>
+        <Link to="/fleet-manager">Dashboard</Link>
         <Link to="/registry">Vehicle Registry</Link>
-        <Link to="/operations">Operations</Link>
-        <Link to="/admin">Admin Panel</Link>
+        <Link to="/driver-management">Driver Management</Link>
+        <Link to="/maintenance-approval">Maintenance Approval</Link>
+        <Link to="/maintenance">Maintenance</Link>
+        <Link to="/finance-report">Finance Report</Link>
       </nav>
 
       <div className="sidebar-user">
@@ -72,4 +74,4 @@ function Sidebar() {
   );
 }
 
-export default Sidebar;
+export default SidebarFleetManager;

@@ -100,9 +100,10 @@ function RegisterForm({ onRegister }) {
             className={errors.role ? "error" : ""}
           >
             <option value="">Select Role</option>
-            <option value="driver">Fleet Driver</option>
-            <option value="operations">Operations Manager</option>
-            <option value="admin">System Admin</option>
+            <option value="fleet-manager">Fleet Manager</option>
+            <option value="dispatcher">Dispatcher</option>
+            <option value="safety-officer">Safety Officer</option>
+            <option value="finance-analyst">Finance Analyst</option>
           </select>
           {errors.role && <span className="error-text">{errors.role}</span>}
         </div>
