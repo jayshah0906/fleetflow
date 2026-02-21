@@ -34,3 +34,6 @@ coverage/
 # Database
 *.db
 *.sqlite
+
+# Kiro specs
+.kiro/
