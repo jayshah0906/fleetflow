@@ -1,0 +1,15 @@
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 20px;
+}
+
+.pagination-buttons button {
+  margin-right: 5px;
+  padding: 6px 10px;
+}
+
+.pagination-buttons .active {
+  background: #333;
+  color: white;
+}

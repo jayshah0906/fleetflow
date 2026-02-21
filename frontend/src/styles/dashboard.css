@@ -1,0 +1,88 @@
+/* DASHBOARD CORE STYLES */
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  margin-bottom: 40px;
+}
+
+.kpi-card {
+  background: white;
+  padding: 20px;
+  border: 1px solid #eee;
+  border-radius: 8px;
+}
+
+.kpi-title {
+  font-size: 12px;
+  color: #888;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.kpi-value {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.driver-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin: 40px 0;
+}
+
+.driver-card {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #eee;
+}
+
+.driver-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.score {
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.map-card {
+  background: white;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 20px;
+  margin-top: 40px;
+}
+
+.map-placeholder {
+  height: 200px;
+  background: #f1f1f1;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+}
+
+.efficiency-banner {
+  margin-top: 40px;
+  background: #333;
+  color: white;
+  padding: 30px;
+  border-radius: 8px;
+}
+
+@media (max-width: 1000px) {
+  .kpi-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .driver-grid {
+    grid-template-columns: 1fr;
+  }
+}

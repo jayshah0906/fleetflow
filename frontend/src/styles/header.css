@@ -1,0 +1,21 @@
+.header {
+  height: 60px;
+  padding: 0 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #eee;
+}
+
+.header input {
+  width: 300px;
+  padding: 8px;
+}
+
+.add-btn {
+  background: #333;
+  color: white;
+  padding: 8px 15px;
+  border: none;
+  cursor: pointer;
+}

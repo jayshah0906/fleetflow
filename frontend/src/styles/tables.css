@@ -1,0 +1,21 @@
+.table-wrapper {
+  background: white;
+  border: 1px solid #eee;
+  padding: 20px;
+  border-radius: 6px;
+  margin-top: 30px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+}
+
+.status {
+  font-weight: bold;
+}
