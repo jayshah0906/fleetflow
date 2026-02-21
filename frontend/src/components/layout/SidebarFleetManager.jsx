@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
-import TruckIcon from "../common/TruckIcon";
+import Logo from "../common/Logo";
 import "../../styles/sidebar.css";
 
 function SidebarFleetManager() {
@@ -30,11 +30,7 @@ function SidebarFleetManager() {
   return (
     <aside className="sidebar">
       <div className="sidebar-logo">
-        <TruckIcon size={36} />
-        <div>
-          <h1>Fleet Flow</h1>
-          <p>Management Portal</p>
-        </div>
+        <Logo size={80} />
       </div>
 
       <nav className="sidebar-nav">
@@ -43,7 +39,7 @@ function SidebarFleetManager() {
         <Link to="/driver-management">Driver Management</Link>
         <Link to="/maintenance-approval">Maintenance Approval</Link>
         <Link to="/maintenance">Maintenance</Link>
-        <Link to="/finance-report">Finance Report</Link>
+        <Link to="/finance-report-manager">Finance Report</Link>
       </nav>
 
       <div className="sidebar-user">

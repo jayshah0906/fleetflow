@@ -1,13 +1,12 @@
 import React from "react";
-import TruckIcon from "../common/TruckIcon";
+import Logo from "../common/Logo";
 import "../../styles/auth.css";
 
 function AuthNavbar() {
   return (
     <header className="auth-navbar">
       <div className="brand">
-        <TruckIcon size={32} />
-        <h1>Fleet Flow</h1>
+        <Logo size={60} />
       </div>
 
       <nav>

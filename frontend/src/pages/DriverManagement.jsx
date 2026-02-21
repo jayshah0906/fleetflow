@@ -1,35 +1,37 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import SidebarFleetManager from "../components/layout/SidebarFleetManager";
+import api from "../services/api";
 import "../styles/dashboard.css";
 
 function DriverManagement() {
+  const [drivers, setDrivers] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   
   const [formData, setFormData] = useState({
     name: "",
-    age: "",
-    licenseNumber: "",
-    licenseExpiry: ""
+    license_number: "",
+    license_expiry: "",
+    safety_score: 85
   });
 
-  const [drivers, setDrivers] = useState(() => {
-    const saved = localStorage.getItem("drivers");
-    if (saved) {
-      return JSON.parse(saved);
-    } else {
-      // Initialize with default drivers
-      const defaultDrivers = [
-        { id: 1, name: "John Doe", age: 35, licenseNumber: "DL-1234567890", licenseExpiry: "2026-12-31", status: "Available", rating: 98 },
-        { id: 2, name: "Jane Smith", age: 28, licenseNumber: "DL-0987654321", licenseExpiry: "2027-06-15", status: "Available", rating: 95 },
-        { id: 3, name: "Mike Johnson", age: 42, licenseNumber: "DL-1122334455", licenseExpiry: "2025-09-20", status: "On Trip", rating: 92 },
-        { id: 4, name: "Sarah Williams", age: 31, licenseNumber: "DL-5544332211", licenseExpiry: "2028-03-10", status: "Available", rating: 97 },
-        { id: 5, name: "David Brown", age: 38, licenseNumber: "DL-6677889900", licenseExpiry: "2026-08-25", status: "Available", rating: 94 },
-      ];
-      localStorage.setItem("drivers", JSON.stringify(defaultDrivers));
-      return defaultDrivers;
+  useEffect(() => {
+    fetchDrivers();
+  }, []);
+
+  const fetchDrivers = async () => {
+    try {
+      const response = await api.getDrivers({ page: 1, limit: 100 });
+      if (response.success) {
+        setDrivers(response.data.drivers || []);
+      }
+    } catch (error) {
+      console.error('Failed to fetch drivers:', error);
+    } finally {
+      setLoading(false);
     }
-  });
+  };
 
   const handleInputChange = (e) => {
     setFormData({
@@ -38,63 +40,64 @@ function DriverManagement() {
     });
   };
 
-  const handleSave = () => {
-    // Validate form
-    if (!formData.name || !formData.age || !formData.licenseNumber || !formData.licenseExpiry) {
-      alert("Please fill in all fields!");
+  const handleSave = async () => {
+    if (!formData.name || !formData.license_number || !formData.license_expiry) {
+      alert("Please fill in all required fields!");
       return;
     }
 
-    const newDriver = {
-      id: drivers.length + 1,
-      name: formData.name,
-      age: parseInt(formData.age),
-      licenseNumber: formData.licenseNumber,
-      licenseExpiry: formData.licenseExpiry,
-      status: "Available",
-      rating: 85 // Default rating for new drivers
-    };
-    
-    const updatedDrivers = [...drivers, newDriver];
-    setDrivers(updatedDrivers);
-    localStorage.setItem("drivers", JSON.stringify(updatedDrivers));
-    
-    setFormData({
-      name: "",
-      age: "",
-      licenseNumber: "",
-      licenseExpiry: ""
-    });
-    setShowForm(false);
-    alert("Driver added successfully!");
+    try {
+      const response = await api.createDriver({
+        name: formData.name,
+        license_number: formData.license_number,
+        license_expiry: formData.license_expiry,
+        safety_score: parseInt(formData.safety_score) || 85
+      });
+      
+      if (response.success) {
+        await fetchDrivers();
+        setFormData({
+          name: "",
+          license_number: "",
+          license_expiry: "",
+          safety_score: 85
+        });
+        setShowForm(false);
+        alert("Driver added successfully!");
+      }
+    } catch (error) {
+      alert('Failed to create driver: ' + error.message);
+    }
   };
 
   const handleCancel = () => {
     setFormData({
       name: "",
-      age: "",
-      licenseNumber: "",
-      licenseExpiry: ""
+      license_number: "",
+      license_expiry: "",
+      safety_score: 85
     });
     setShowForm(false);
   };
 
-  const handleDelete = (id) => {
-    if (window.confirm("Are you sure you want to remove this driver?")) {
-      const updatedDrivers = drivers.filter(d => d.id !== id);
-      setDrivers(updatedDrivers);
-      localStorage.setItem("drivers", JSON.stringify(updatedDrivers));
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to remove this driver?")) {
+      return;
+    }
+    
+    try {
+      await api.deleteDriver(id);
+      await fetchDrivers();
+    } catch (error) {
+      alert('Failed to delete driver: ' + error.message);
     }
   };
 
-  // Filter drivers based on search term
   const filteredDrivers = drivers.filter(driver => 
     driver.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    driver.licenseNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    driver.status.toLowerCase().includes(searchTerm.toLowerCase())
+    driver.license_number.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Check if license is expiring soon (within 30 days)
   const isExpiringSoon = (expiryDate) => {
     const today = new Date();
     const expiry = new Date(expiryDate);
@@ -115,7 +118,6 @@ function DriverManagement() {
         <div className="page-content" style={{ backgroundColor: '#ffffff' }}>
           <h1 style={{ color: '#333', marginBottom: '20px' }}>Driver Management</h1>
 
-          {/* Search Bar */}
           <div style={{
             display: 'flex',
             justifyContent: 'space-between',
@@ -137,14 +139,7 @@ function DriverManagement() {
                 backgroundColor: '#fff'
               }}
             />
-          </div>
-
-          {/* New Driver Button */}
-          <div style={{
-            display: 'flex',
-            justifyContent: 'flex-end',
-            marginBottom: '20px'
-          }}>
+            
             <button 
               onClick={() => setShowForm(!showForm)}
               style={{
@@ -161,7 +156,6 @@ function DriverManagement() {
             </button>
           </div>
 
-          {/* New Driver Form */}
           {showForm && (
             <div style={{
               backgroundColor: '#f8f9fa',
@@ -173,7 +167,7 @@ function DriverManagement() {
               <h2 style={{ marginBottom: '20px', color: '#333' }}>New Driver Registration</h2>
               
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '20px' }}>
-                <div style={{ marginBottom: '15px' }}>
+                <div>
                   <label style={{ display: 'block', marginBottom: '5px', color: '#333', fontWeight: '600' }}>
                     Driver Name *
                   </label>
@@ -192,35 +186,14 @@ function DriverManagement() {
                   />
                 </div>
 
-                <div style={{ marginBottom: '15px' }}>
-                  <label style={{ display: 'block', marginBottom: '5px', color: '#333', fontWeight: '600' }}>
-                    Age *
-                  </label>
-                  <input 
-                    type="number"
-                    name="age"
-                    value={formData.age}
-                    onChange={handleInputChange}
-                    placeholder="e.g., 35"
-                    min="18"
-                    max="65"
-                    style={{
-                      width: '100%',
-                      padding: '10px',
-                      borderRadius: '5px',
-                      border: '1px solid #ddd'
-                    }}
-                  />
-                </div>
-
-                <div style={{ marginBottom: '15px' }}>
+                <div>
                   <label style={{ display: 'block', marginBottom: '5px', color: '#333', fontWeight: '600' }}>
                     License Number *
                   </label>
                   <input 
                     type="text"
-                    name="licenseNumber"
-                    value={formData.licenseNumber}
+                    name="license_number"
+                    value={formData.license_number}
                     onChange={handleInputChange}
                     placeholder="e.g., DL-1234567890"
                     style={{
@@ -232,15 +205,35 @@ function DriverManagement() {
                   />
                 </div>
 
-                <div style={{ marginBottom: '15px' }}>
+                <div>
                   <label style={{ display: 'block', marginBottom: '5px', color: '#333', fontWeight: '600' }}>
                     License Expiry Date *
                   </label>
                   <input 
                     type="date"
-                    name="licenseExpiry"
-                    value={formData.licenseExpiry}
+                    name="license_expiry"
+                    value={formData.license_expiry}
                     onChange={handleInputChange}
+                    style={{
+                      width: '100%',
+                      padding: '10px',
+                      borderRadius: '5px',
+                      border: '1px solid #ddd'
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', marginBottom: '5px', color: '#333', fontWeight: '600' }}>
+                    Safety Score (0-100)
+                  </label>
+                  <input 
+                    type="number"
+                    name="safety_score"
+                    value={formData.safety_score}
+                    onChange={handleInputChange}
+                    min="0"
+                    max="100"
                     style={{
                       width: '100%',
                       padding: '10px',
@@ -284,7 +277,6 @@ function DriverManagement() {
             </div>
           )}
 
-          {/* Drivers Table */}
           <div style={{
             backgroundColor: '#ffffff',
             borderRadius: '12px',
@@ -320,14 +312,6 @@ function DriverManagement() {
                     fontSize: '16px',
                     fontWeight: '600',
                     borderBottom: '2px solid #dee2e6'
-                  }}>Age</th>
-                  <th style={{
-                    padding: '20px',
-                    textAlign: 'left',
-                    color: '#495057',
-                    fontSize: '16px',
-                    fontWeight: '600',
-                    borderBottom: '2px solid #dee2e6'
                   }}>License Number</th>
                   <th style={{
                     padding: '20px',
@@ -344,15 +328,7 @@ function DriverManagement() {
                     fontSize: '16px',
                     fontWeight: '600',
                     borderBottom: '2px solid #dee2e6'
-                  }}>Rating</th>
-                  <th style={{
-                    padding: '20px',
-                    textAlign: 'left',
-                    color: '#495057',
-                    fontSize: '16px',
-                    fontWeight: '600',
-                    borderBottom: '2px solid #dee2e6'
-                  }}>Status</th>
+                  }}>Safety Score</th>
                   <th style={{
                     padding: '20px',
                     textAlign: 'left',
@@ -364,9 +340,15 @@ function DriverManagement() {
                 </tr>
               </thead>
               <tbody>
-                {filteredDrivers.length === 0 ? (
+                {loading ? (
                   <tr>
-                    <td colSpan="8" style={{ padding: '40px', textAlign: 'center', color: '#6c757d' }}>
+                    <td colSpan="6" style={{ padding: '40px', textAlign: 'center', color: '#6c757d' }}>
+                      Loading drivers...
+                    </td>
+                  </tr>
+                ) : filteredDrivers.length === 0 ? (
+                  <tr>
+                    <td colSpan="6" style={{ padding: '40px', textAlign: 'center', color: '#6c757d' }}>
                       No drivers found. Click "New Driver" to add one.
                     </td>
                   </tr>
@@ -375,12 +357,13 @@ function DriverManagement() {
                     <tr key={driver.id} style={{ borderBottom: '1px solid #dee2e6' }}>
                       <td style={{ padding: '20px', color: '#212529' }}>{driver.id}</td>
                       <td style={{ padding: '20px', color: '#212529' }}>{driver.name}</td>
-                      <td style={{ padding: '20px', color: '#212529' }}>{driver.age}</td>
-                      <td style={{ padding: '20px', color: '#212529' }}>{driver.licenseNumber}</td>
+                      <td style={{ padding: '20px', color: '#212529' }}>{driver.license_number}</td>
                       <td style={{ padding: '20px' }}>
                         <div>
-                          <div style={{ color: '#212529' }}>{driver.licenseExpiry}</div>
-                          {isExpired(driver.licenseExpiry) && (
+                          <div style={{ color: '#212529' }}>
+                            {new Date(driver.license_expiry).toLocaleDateString()}
+                          </div>
+                          {isExpired(driver.license_expiry) && (
                             <span style={{
                               display: 'inline-block',
                               marginTop: '5px',
@@ -394,7 +377,7 @@ function DriverManagement() {
                               EXPIRED
                             </span>
                           )}
-                          {!isExpired(driver.licenseExpiry) && isExpiringSoon(driver.licenseExpiry) && (
+                          {!isExpired(driver.license_expiry) && isExpiringSoon(driver.license_expiry) && (
                             <span style={{
                               display: 'inline-block',
                               marginTop: '5px',
@@ -410,15 +393,7 @@ function DriverManagement() {
                           )}
                         </div>
                       </td>
-                      <td style={{ padding: '20px', color: '#212529' }}>{driver.rating}/100</td>
-                      <td style={{ padding: '20px' }}>
-                        <span style={{
-                          color: driver.status === 'Available' ? '#28a745' : '#007bff',
-                          fontWeight: '600'
-                        }}>
-                          {driver.status}
-                        </span>
-                      </td>
+                      <td style={{ padding: '20px', color: '#212529' }}>{driver.safety_score}/100</td>
                       <td style={{ padding: '20px' }}>
                         <button 
                           onClick={() => handleDelete(driver.id)}

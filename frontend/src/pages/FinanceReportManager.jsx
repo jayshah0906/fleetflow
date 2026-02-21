@@ -1,10 +1,10 @@
 import React from "react";
-import SidebarFinanceAnalyst from "../components/layout/SidebarFinanceAnalyst";
+import SidebarFleetManager from "../components/layout/SidebarFleetManager";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import "../styles/dashboard.css";
 
-function DashboardFinanceAnalyst() {
+function FinanceReportManager() {
   // Sample financial data by vehicle
   const vehicleFinancialData = [
     { vehicle: "MH 00", revenue: 17, fuelCost: 6, maintenance: 2, netProfit: 9, acquisitionCost: 50, roi: 18 },
@@ -124,11 +124,11 @@ function DashboardFinanceAnalyst() {
 
   return (
     <div className="app-layout">
-      <SidebarFinanceAnalyst />
+      <SidebarFleetManager />
       <div className="content-area" style={{ backgroundColor: '#ffffff' }}>
         <div className="page-content" style={{ backgroundColor: '#ffffff', padding: '30px' }}>
           
-          <h1 style={{ color: '#333', marginBottom: '20px' }}>Finance Analyst Dashboard</h1>
+          <h1 style={{ color: '#333', marginBottom: '20px' }}>Financial Report</h1>
 
           {/* Key Metrics Formulas */}
           <div style={{
@@ -413,4 +413,4 @@ function DashboardFinanceAnalyst() {
   );
 }
 
-export default DashboardFinanceAnalyst;
+export default FinanceReportManager;

@@ -1,130 +1,282 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import AuthNavbar from "../components/layout/AuthNavbar";
-import LoginForm from "../components/auth/LoginForm";
-import RegisterForm from "../components/auth/RegisterForm";
+import Logo from "../components/common/Logo";
+import api from "../services/api";
 import "../styles/auth.css";
 
 function AuthPage() {
   const [activeTab, setActiveTab] = useState("login");
   const [loginError, setLoginError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [keepSignedIn, setKeepSignedIn] = useState(false);
   const navigate = useNavigate();
 
-  const handleLogin = (credentials) => {
-    // Get all registered users from localStorage
-    const registeredUsers = JSON.parse(localStorage.getItem("registeredUsers") || "[]");
+  const [loginData, setLoginData] = useState({
+    email: "",
+    password: ""
+  });
+
+  const [registerData, setRegisterData] = useState({
+    email: "",
+    password: "",
+    confirmPassword: "",
+    role: "dispatcher"
+  });
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setLoginError("");
     
-    // Find user with matching email and password
-    const user = registeredUsers.find(
-      u => u.email === credentials.email && 
-           u.password === credentials.password
-    );
-    
-    if (user) {
-      // Store current user and authentication status
-      localStorage.setItem("currentUser", JSON.stringify(user));
-      localStorage.setItem("isAuthenticated", "true");
+    try {
+      const response = await api.login({
+        username: loginData.email.split('@')[0],
+        password: loginData.password
+      });
       
-      // Clear any previous errors
-      setLoginError("");
-      
-      // Navigate to role-specific dashboard
-      switch(user.role) {
-        case "fleet-manager":
-          navigate("/fleet-manager");
-          break;
-        case "dispatcher":
-          navigate("/dispatcher");
-          break;
-        case "safety-officer":
-          navigate("/safety-officer");
-          break;
-        case "finance-analyst":
-          navigate("/finance-analyst");
-          break;
-        default:
-          navigate("/dashboard");
+      if (response.success && response.data.user) {
+        const user = response.data.user;
+        
+        localStorage.setItem("currentUser", JSON.stringify(user));
+        localStorage.setItem("isAuthenticated", "true");
+        
+        const roleMap = {
+          "Fleet Manager": "/fleet-manager",
+          "Dispatcher": "/dispatcher",
+          "Safety Officer": "/safety-officer",
+          "Financial Analyst": "/finance-analyst"
+        };
+        
+        navigate(roleMap[user.role] || "/dashboard");
       }
-    } else {
-      // Show error message in red
-      setLoginError("Invalid email or password. Please check your credentials.");
+    } catch (error) {
+      setLoginError(error.message || "Invalid credentials. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleRegister = (userData) => {
-    // Get existing registered users
-    const registeredUsers = JSON.parse(localStorage.getItem("registeredUsers") || "[]");
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    if (isLoading) return;
     
-    // Check if email already exists
-    const emailExists = registeredUsers.some(u => u.email === userData.email);
-    
-    if (emailExists) {
-      alert("This email is already registered. Please login instead.");
+    if (registerData.password !== registerData.confirmPassword) {
+      setLoginError("Passwords do not match");
       return;
     }
     
-    // Add new user to registered users
-    registeredUsers.push(userData);
-    localStorage.setItem("registeredUsers", JSON.stringify(registeredUsers));
+    setIsLoading(true);
+    setLoginError("");
     
-    // Store current user and authentication status
-    localStorage.setItem("currentUser", JSON.stringify(userData));
-    localStorage.setItem("isAuthenticated", "true");
-    
-    // Navigate to role-specific dashboard based on selected role
-    switch(userData.role) {
-      case "fleet-manager":
-        navigate("/fleet-manager");
-        break;
-      case "dispatcher":
-        navigate("/dispatcher");
-        break;
-      case "safety-officer":
-        navigate("/safety-officer");
-        break;
-      case "finance-analyst":
-        navigate("/finance-analyst");
-        break;
-      default:
-        navigate("/dashboard");
+    try {
+      const roleMap = {
+        "fleet-manager": "Fleet Manager",
+        "dispatcher": "Dispatcher",
+        "safety-officer": "Safety Officer",
+        "finance-analyst": "Financial Analyst"
+      };
+      
+      const registrationData = {
+        username: registerData.email.split('@')[0],
+        email: registerData.email,
+        password: registerData.password,
+        role: roleMap[registerData.role] || "Dispatcher"
+      };
+      
+      const response = await api.register(registrationData);
+      
+      if (response.success && response.data) {
+        // Auto login after registration
+        setLoginData({
+          email: registerData.email,
+          password: registerData.password
+        });
+        setActiveTab("login");
+        setLoginError("Account created successfully! Please sign in.");
+      }
+    } catch (error) {
+      setLoginError(error.message || "Registration failed. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <>
-      <AuthNavbar />
+    <div className="auth-page">
+      {/* Top Navigation */}
+      <nav className="auth-nav">
+        <div className="auth-nav-logo">
+          <Logo size={120} />
+        </div>
+        <a href="#" className="auth-nav-support">Support</a>
+      </nav>
 
-      <div className="auth-container">
-        <div className="auth-card">
-          <div className="auth-tabs">
-            <button 
-              className={`auth-tab ${activeTab === "login" ? "active" : ""}`}
-              onClick={() => {
-                setActiveTab("login");
-                setLoginError("");
-              }}
-            >
-              Sign In
-            </button>
-            <button 
-              className={`auth-tab ${activeTab === "register" ? "active" : ""}`}
-              onClick={() => {
-                setActiveTab("register");
-                setLoginError("");
-              }}
-            >
-              Create Account
-            </button>
+      <div className="auth-content">
+        {/* Left Side - Features */}
+        <div className="auth-left">
+          <div className="auth-left-content">
+            <h1 className="auth-brand-title">NEXTRACK</h1>
+            <p className="auth-tagline">
+              Streamline your fleet operations with intelligent management
+              tools designed for modern transportation companies.
+            </p>
+
+            <div className="auth-features">
+              <div className="auth-feature">
+                <div className="feature-icon">✓</div>
+                <span>Real-time vehicle & driver tracking</span>
+              </div>
+              <div className="auth-feature">
+                <div className="feature-icon">✓</div>
+                <span>Intelligent maintenance workflow</span>
+              </div>
+              <div className="auth-feature">
+                <div className="feature-icon">✓</div>
+                <span>Comprehensive financial analytics</span>
+              </div>
+              <div className="auth-feature">
+                <div className="feature-icon">✓</div>
+                <span>Role-based access control</span>
+              </div>
+            </div>
           </div>
+        </div>
 
-          {activeTab === "login" ? (
-            <LoginForm onLogin={handleLogin} loginError={loginError} />
-          ) : (
-            <RegisterForm onRegister={handleRegister} />
-          )}
+        {/* Right Side - Auth Form */}
+        <div className="auth-right">
+          <div className="auth-form-container">
+            {/* Tabs */}
+            <div className="auth-tabs-modern">
+              <button 
+                className={`auth-tab-modern ${activeTab === "login" ? "active" : ""}`}
+                onClick={() => {
+                  setActiveTab("login");
+                  setLoginError("");
+                }}
+              >
+                Sign In
+              </button>
+              <button 
+                className={`auth-tab-modern ${activeTab === "register" ? "active" : ""}`}
+                onClick={() => {
+                  setActiveTab("register");
+                  setLoginError("");
+                }}
+              >
+                Create Account
+              </button>
+            </div>
+
+            {/* Welcome Message */}
+            <div className="auth-welcome">
+              <h2>{activeTab === "login" ? "Welcome Back" : "Get Started"}</h2>
+              <p>{activeTab === "login" ? "Manage your fleet efficiency with ease." : "Create your account to get started."}</p>
+            </div>
+
+            {/* Error Message */}
+            {loginError && (
+              <div className={`auth-message ${loginError.includes('successfully') ? 'success' : 'error'}`}>
+                {loginError}
+              </div>
+            )}
+
+            {/* Login Form */}
+            {activeTab === "login" && (
+              <form onSubmit={handleLogin} className="auth-form-modern">
+                <div className="form-group-modern">
+                  <input
+                    type="email"
+                    placeholder="Email address"
+                    value={loginData.email}
+                    onChange={(e) => setLoginData({...loginData, email: e.target.value})}
+                    required
+                  />
+                </div>
+
+                <div className="form-group-modern">
+                  <input
+                    type="password"
+                    placeholder="Password"
+                    value={loginData.password}
+                    onChange={(e) => setLoginData({...loginData, password: e.target.value})}
+                    required
+                  />
+                </div>
+
+                <div className="form-options">
+                  <label className="checkbox-label">
+                    <input
+                      type="checkbox"
+                      checked={keepSignedIn}
+                      onChange={(e) => setKeepSignedIn(e.target.checked)}
+                    />
+                    <span>Keep me signed in</span>
+                  </label>
+                </div>
+
+                <button type="submit" className="btn-auth-primary" disabled={isLoading}>
+                  {isLoading ? "Signing In..." : "Sign In"}
+                </button>
+              </form>
+            )}
+
+            {/* Register Form */}
+            {activeTab === "register" && (
+              <form onSubmit={handleRegister} className="auth-form-modern">
+                <div className="form-group-modern">
+                  <input
+                    type="email"
+                    placeholder="Email address"
+                    value={registerData.email}
+                    onChange={(e) => setRegisterData({...registerData, email: e.target.value})}
+                    required
+                  />
+                </div>
+
+                <div className="form-group-modern">
+                  <select
+                    value={registerData.role}
+                    onChange={(e) => setRegisterData({...registerData, role: e.target.value})}
+                    required
+                  >
+                    <option value="dispatcher">Dispatcher</option>
+                    <option value="fleet-manager">Fleet Manager</option>
+                    <option value="safety-officer">Safety Officer</option>
+                    <option value="finance-analyst">Financial Analyst</option>
+                  </select>
+                </div>
+
+                <div className="form-group-modern">
+                  <input
+                    type="password"
+                    placeholder="Password (min 8 characters)"
+                    value={registerData.password}
+                    onChange={(e) => setRegisterData({...registerData, password: e.target.value})}
+                    minLength={8}
+                    required
+                  />
+                </div>
+
+                <div className="form-group-modern">
+                  <input
+                    type="password"
+                    placeholder="Confirm Password"
+                    value={registerData.confirmPassword}
+                    onChange={(e) => setRegisterData({...registerData, confirmPassword: e.target.value})}
+                    minLength={8}
+                    required
+                  />
+                </div>
+
+                <button type="submit" className="btn-auth-primary" disabled={isLoading}>
+                  {isLoading ? "Creating Account..." : "Create Account"}
+                </button>
+              </form>
+            )}
+          </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }
 

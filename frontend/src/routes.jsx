@@ -16,6 +16,7 @@ import MaintenanceApproval from "./pages/MaintenanceApproval";
 import SafetyCompliance from "./pages/SafetyCompliance";
 import FinancialReport from "./pages/FinancialReport";
 import FinanceReport from "./pages/FinanceReport";
+import FinanceReportManager from "./pages/FinanceReportManager";
 import NewTrip from "./pages/NewTrip";
 import AuthPage from "./pages/AuthPage";
 
@@ -31,12 +32,14 @@ function RoutesConfig() {
       <Route path="/safety-officer" element={<ProtectedRoute><DashboardSafetyOfficer /></ProtectedRoute>} />
       <Route path="/finance-analyst" element={<ProtectedRoute><DashboardFinanceAnalyst /></ProtectedRoute>} />
       <Route path="/registry" element={<ProtectedRoute><VehicleRegistry /></ProtectedRoute>} />
+      <Route path="/vehicle-registry" element={<ProtectedRoute><VehicleRegistry /></ProtectedRoute>} />
       <Route path="/driver-management" element={<ProtectedRoute><DriverManagement /></ProtectedRoute>} />
       <Route path="/maintenance" element={<ProtectedRoute><Maintenance /></ProtectedRoute>} />
       <Route path="/maintenance-approval" element={<ProtectedRoute><MaintenanceApproval /></ProtectedRoute>} />
       <Route path="/safety-compliance" element={<ProtectedRoute><SafetyCompliance /></ProtectedRoute>} />
       <Route path="/financial-report" element={<ProtectedRoute><FinancialReport /></ProtectedRoute>} />
       <Route path="/finance-report" element={<ProtectedRoute><FinanceReport /></ProtectedRoute>} />
+      <Route path="/finance-report-manager" element={<ProtectedRoute><FinanceReportManager /></ProtectedRoute>} />
       <Route path="/new-trip" element={<ProtectedRoute><NewTrip /></ProtectedRoute>} />
     </Routes>
   );

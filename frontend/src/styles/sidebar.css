@@ -11,30 +11,15 @@
 .sidebar-logo {
   display: flex;
   align-items: center;
-  gap: 12px;
+  justify-content: center;
   margin-bottom: 32px;
   padding-bottom: 24px;
   border-bottom: 1px solid #e5e7eb;
 }
 
-.sidebar-logo .logo-icon {
-  width: 36px;
-  height: 36px;
-  color: #333;
-  flex-shrink: 0;
-}
-
-.sidebar-logo h1 {
-  font-size: 18px;
-  font-weight: 700;
-  color: #333;
-  margin: 0;
-}
-
-.sidebar-logo p {
-  font-size: 12px;
-  color: #999;
-  margin: 2px 0 0 0;
+.sidebar-logo img {
+  max-width: 100%;
+  height: auto;
 }
 
 .sidebar-nav {

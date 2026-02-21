@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "../../styles/forms.css";
 
-function LoginForm({ onLogin, loginError }) {
+function LoginForm({ onLogin, loginError, isLoading }) {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -106,7 +106,9 @@ function LoginForm({ onLogin, loginError }) {
           /> Keep me signed in
         </label>
 
-        <button type="submit" className="primary-btn full">Sign In</button>
+        <button type="submit" className="primary-btn full" disabled={isLoading}>
+          {isLoading ? "Signing In..." : "Sign In"}
+        </button>
       </form>
     </div>
   );

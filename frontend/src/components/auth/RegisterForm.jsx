@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "../../styles/forms.css";
 
-function RegisterForm({ onRegister }) {
+function RegisterForm({ onRegister, isLoading, registerError }) {
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -42,8 +42,8 @@ function RegisterForm({ onRegister }) {
     
     if (!formData.password) {
       newErrors.password = "Password is required";
-    } else if (formData.password.length < 6) {
-      newErrors.password = "Password must be at least 6 characters";
+    } else if (formData.password.length < 8) {
+      newErrors.password = "Password must be at least 8 characters";
     }
     
     return newErrors;
@@ -66,6 +66,20 @@ function RegisterForm({ onRegister }) {
     <div className="auth-section">
       <h2>Join Fleet Flow</h2>
       <p>Enterprise-grade logistics management.</p>
+
+      {registerError && (
+        <div style={{
+          color: '#dc3545',
+          backgroundColor: '#f8d7da',
+          border: '1px solid #f5c6cb',
+          padding: '10px',
+          borderRadius: '5px',
+          marginBottom: '15px',
+          fontSize: '14px'
+        }}>
+          {registerError}
+        </div>
+      )}
 
       <form className="form" onSubmit={handleSubmit}>
         <div className="form-group">
@@ -120,8 +134,8 @@ function RegisterForm({ onRegister }) {
           {errors.password && <span className="error-text">{errors.password}</span>}
         </div>
 
-        <button type="submit" className="secondary-btn full">
-          Create Account
+        <button type="submit" className="secondary-btn full" disabled={isLoading}>
+          {isLoading ? "Creating Account..." : "Create Account"}
         </button>
       </form>
     </div>

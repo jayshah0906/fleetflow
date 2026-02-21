@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
-import TruckIcon from "../common/TruckIcon";
+import Logo from "../common/Logo";
 import "../../styles/sidebar.css";
 
 function Sidebar() {
@@ -30,11 +30,7 @@ function Sidebar() {
   return (
     <aside className="sidebar">
       <div className="sidebar-logo">
-        <TruckIcon size={36} />
-        <div>
-          <h1>Fleet Flow</h1>
-          <p>Management Portal</p>
-        </div>
+        <Logo size={80} />
       </div>
 
       <nav className="sidebar-nav">

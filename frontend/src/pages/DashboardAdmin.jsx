@@ -1,21 +1,160 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import Sidebar from "../components/layout/Sidebar";
-import MaintenanceTable from "../components/dashboard/MaintenanceTable";
-import DispatchForm from "../components/dashboard/DispatchForm";
-import EfficiencyBanner from "../components/dashboard/EfficiencyBanner";
+import api from "../services/api";
+import "../styles/dashboard.css";
 
 function DashboardAdmin() {
+  const [kpis, setKpis] = useState({
+    total_vehicles: 0,
+    maintenance_alerts: 0,
+    utilization_rate: 0,
+    pending_trips: 0,
+    active_drivers: 0
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchKPIs();
+  }, []);
+
+  const fetchKPIs = async () => {
+    try {
+      const response = await api.getDashboardKPIs();
+      if (response.success) {
+        setKpis(response.data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch KPIs:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="app-layout">
       <Sidebar />
+      <div className="content-area" style={{ backgroundColor: '#ffffff' }}>
+        <div className="page-content" style={{ backgroundColor: '#ffffff', padding: '30px' }}>
+          <h1 style={{ color: '#333', marginBottom: '20px' }}>Admin Dashboard</h1>
+          <p style={{ color: '#6c757d', marginBottom: '30px' }}>
+            System-wide overview and management
+          </p>
 
-      <div className="content-area">
-        <div className="admin-grid">
-          <DispatchForm />
-          <MaintenanceTable />
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(4, 1fr)',
+            gap: '20px',
+            marginBottom: '30px'
+          }}>
+            <div style={{
+              backgroundColor: '#f8f9fa',
+              padding: '30px',
+              borderRadius: '12px',
+              border: '1px solid #dee2e6',
+              textAlign: 'center'
+            }}>
+              <h3 style={{ color: '#007bff', fontSize: '16px', marginBottom: '10px' }}>
+                Total Fleet
+              </h3>
+              <p style={{ color: '#007bff', fontSize: '42px', fontWeight: 'bold', margin: 0 }}>
+                {loading ? '...' : kpis.total_vehicles || 0}
+              </p>
+            </div>
+
+            <div style={{
+              backgroundColor: '#f8f9fa',
+              padding: '30px',
+              borderRadius: '12px',
+              border: '1px solid #dee2e6',
+              textAlign: 'center'
+            }}>
+              <h3 style={{ color: '#dc3545', fontSize: '16px', marginBottom: '10px' }}>
+                Maintenance Alerts
+              </h3>
+              <p style={{ color: '#dc3545', fontSize: '42px', fontWeight: 'bold', margin: 0 }}>
+                {loading ? '...' : kpis.maintenance_alerts || 0}
+              </p>
+            </div>
+
+            <div style={{
+              backgroundColor: '#f8f9fa',
+              padding: '30px',
+              borderRadius: '12px',
+              border: '1px solid #dee2e6',
+              textAlign: 'center'
+            }}>
+              <h3 style={{ color: '#28a745', fontSize: '16px', marginBottom: '10px' }}>
+                Utilization
+              </h3>
+              <p style={{ color: '#28a745', fontSize: '42px', fontWeight: 'bold', margin: 0 }}>
+                {loading ? '...' : `${Math.round(kpis.utilization_rate || 0)}%`}
+              </p>
+            </div>
+
+            <div style={{
+              backgroundColor: '#f8f9fa',
+              padding: '30px',
+              borderRadius: '12px',
+              border: '1px solid #dee2e6',
+              textAlign: 'center'
+            }}>
+              <h3 style={{ color: '#6f42c1', fontSize: '16px', marginBottom: '10px' }}>
+                Active Drivers
+              </h3>
+              <p style={{ color: '#6f42c1', fontSize: '42px', fontWeight: 'bold', margin: 0 }}>
+                {loading ? '...' : kpis.active_drivers || 0}
+              </p>
+            </div>
+          </div>
+
+          <div style={{
+            backgroundColor: '#e7f3ff',
+            border: '1px solid #b3d9ff',
+            padding: '20px',
+            borderRadius: '8px'
+          }}>
+            <h3 style={{ color: '#004085', marginBottom: '15px' }}>System Management</h3>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '15px' }}>
+              <Link to="/vehicle-registry" style={{
+                padding: '15px',
+                backgroundColor: '#007bff',
+                color: 'white',
+                textDecoration: 'none',
+                borderRadius: '5px',
+                textAlign: 'center',
+                fontSize: '14px',
+                fontWeight: '600'
+              }}>
+                Vehicle Registry
+              </Link>
+              <Link to="/driver-management" style={{
+                padding: '15px',
+                backgroundColor: '#28a745',
+                color: 'white',
+                textDecoration: 'none',
+                borderRadius: '5px',
+                textAlign: 'center',
+                fontSize: '14px',
+                fontWeight: '600'
+              }}>
+                Driver Management
+              </Link>
+              <Link to="/maintenance" style={{
+                padding: '15px',
+                backgroundColor: '#ffc107',
+                color: '#000',
+                textDecoration: 'none',
+                borderRadius: '5px',
+                textAlign: 'center',
+                fontSize: '14px',
+                fontWeight: '600'
+              }}>
+                Maintenance
+              </Link>
+            </div>
+          </div>
         </div>
-
-        <EfficiencyBanner />
       </div>
     </div>
   );
